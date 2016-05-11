@@ -284,6 +284,14 @@ int tinkerDigitalWrite(String command)
 	            turnOff();
 	        }
 	    }
+	    else if (pinNumber == 7)
+	    {
+	        
+            Particle.publish("Off", "Kill");
+	        pinMode(pinNumber, OUTPUT);
+            turnOff();
+        
+	    }
 	    
 		return 1;
 	}
