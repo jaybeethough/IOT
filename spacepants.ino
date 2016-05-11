@@ -29,11 +29,8 @@ void setup()
 {
     //Serial.begin(9600);
     
-    Spark.function("digitalread", tinkerDigitalRead);
     Spark.function("digitalwrite", tinkerDigitalWrite);
     Spark.function("analogread", tinkerAnalogRead);
-    Spark.function("analogwrite", tinkerAnalogWrite);
-
     
     strip.begin();
     strip.show(); // Initialize all pixels to 'off'
@@ -133,27 +130,6 @@ uint32_t Wheel(byte WheelPos) {
   }
 }
 
-
-int tinkerDigitalRead(String pin)
-{
-	//convert ascii to integer
-	int pinNumber = pin.charAt(1) - '0';
-	//Sanity check to see if the pin numbers are within limits
-	if (pinNumber< 0 || pinNumber >7) return -1;
-
-	if(pin.startsWith("D"))
-	{
-		pinMode(pinNumber, INPUT_PULLDOWN);
-		return digitalRead(pinNumber);
-	}
-	else if (pin.startsWith("A"))
-	{
-		pinMode(pinNumber+10, INPUT_PULLDOWN);
-		return digitalRead(pinNumber+10);
-	}
-	return -2;
-}
-
 /*
 Source: Tweaking4All.com - Arduino - LEDStrip effects for NeoPixel and FastLED (http://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/)
 */
@@ -250,76 +226,65 @@ int tinkerDigitalWrite(String command)
 	{
 	    if (pinNumber == 1)
 	    {
-	        //turn on rgb fade
 	        if ( value == 1 )
 	        {
+	            Particle.publish("On", "RGBFade");
     	        pinMode(pinNumber, OUTPUT);
     	        rgbLoop();
 	        }
-	        //turn off
 	        else
 	        {
+	            Particle.publish("Off", "RGBFade");
 	            pinMode(pinNumber, OUTPUT);
 	            turnOff();
 	        }
 	    }
 	    else if (pinNumber == 2)
 	    {
-	        //turn on rainbow
 	        if ( value == 1 )
 	        {
+	            Particle.publish("On", "Rainbow");
     	        pinMode(pinNumber, OUTPUT);
     	        rainbow(20);
 	        }
-	        //turn off
 	        else
 	        {
+	            Particle.publish("Off", "Rainbow");
 	            pinMode(pinNumber, OUTPUT);
 	            turnOff();
 	        }
 	    }
 	    else if (pinNumber == 3)
 	    {
-	        //turn on rainbow
 	        if ( value == 1 )
 	        {
+	            Particle.publish("On", "BlueFadeInOut");
     	        pinMode(pinNumber, OUTPUT);
     	        FadeInOut(0x00, 0x00, 0xff);
 	        }
-	        //turn off
 	        else
 	        {
+	            Particle.publish("Off", "BlueFadeInOut");
 	            pinMode(pinNumber, OUTPUT);
 	            turnOff();
 	        }
 	    }
 	    else if (pinNumber == 4)
 	    {
-	        //turn on rainbow
 	        if ( value == 1 )
 	        {
+	            Particle.publish("On", "RedFadeInOutOffMic");
     	        pinMode(pinNumber, OUTPUT);
     	        FadeInOutOffMic(0xff, 0x00, 0x00);
 	        }
-	        //turn off
 	        else
 	        {
+	            Particle.publish("Off", "RedFadeInOutOffMic");
 	            pinMode(pinNumber, OUTPUT);
 	            turnOff();
 	        }
 	    }
-	    else
-	    {
-		    pinMode(pinNumber, OUTPUT);
-		    digitalWrite(pinNumber, value);
-	    }
 	    
-		return 1;
-	}
-	else if(command.startsWith("A"))
-	{
-		pinMode(pinNumber+10, OUTPUT);
-		digitalWrite(pinNumber+10, value);
 		return 1;
 	}
 	else return -3;
@@ -346,7 +311,7 @@ int tinkerAnalogRead(String pin)
 	}
 	else if (pin.startsWith("A"))
 	{
-		return analogRead(pinNumber+10);
+		return mymax;
 	}
 	return -2;
 }
